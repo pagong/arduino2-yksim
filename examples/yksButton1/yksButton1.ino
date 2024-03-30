@@ -21,7 +21,7 @@ char *pos;
 
 /*************************************/
 
-void checkKey(Task* me) {
+void checkBtn(Task* me) {
   static int key_on = 0, key_off = 0, key_press = 0;
 
   yubikey_incr_timestamp(&ctx);
@@ -39,14 +39,14 @@ void checkKey(Task* me) {
   }
 
   if ((key_press > 0) && (key_off > THRESHOLD)) {
-    payload(key_press);
+    GeneratePayload(key_press);
     key_press = 0;
   }
 }
 
 /*************************************/
 
-Task taskKey(TIME_POLL, checkKey);
+Task taskBtn(TIME_POLL, checkBtn);
 Task taskKB (TIME_SEND, sendKey);
 
 /*************************************/
@@ -58,7 +58,7 @@ void setup() {
 
   YubikeyInit();
 
-  SoftTimer.add(&taskKey);
+  SoftTimer.add(&taskBtn);
 }
 
 /*************************************/
@@ -71,26 +71,26 @@ void sendKey(Task* me) {
     Keyboard.write('\n');
     Keyboard.end();
     SoftTimer.remove(&taskKB);
-    SoftTimer.add(&taskKey);
+    SoftTimer.add(&taskBtn);
   }
 }
 
 /*************************************/
 
-void payload(int duration) {
+void GeneratePayload(int duration) {
   *otp = '\0';
-  if (duration <= 10) gen_token();
-  if (duration >= 15) gen_static();
+  if (duration <= 11) GenerateToken();
+  if (duration >= 13) GenerateStatic();
 
   pos = otp;
   Keyboard.begin();
-  SoftTimer.remove(&taskKey);
+  SoftTimer.remove(&taskBtn);
   SoftTimer.add(&taskKB);
 }
 
 /*************************************/
 
-void gen_token(void) {
+void GenerateToken(void) {
   unsigned long time1, time2;
 
   yubikey_simulate(otp, &ctx);
@@ -99,12 +99,12 @@ void gen_token(void) {
 
 /*************************************/
 
-void gen_static(void) {
+void GenerateStatic(void) {
   unsigned long time1, time2;
   char buffer[16];
 
-  yubikey_eeget_static ((uint8_t *) buffer);
-  yubikey_modhex_encode (otp, buffer, 16);
+  yubikey_eeget_static((uint8_t *) buffer);
+  yubikey_modhex_encode(otp, buffer, 16);
 }
 
 /*************************************/
@@ -151,7 +151,7 @@ void YubikeyInit() {
   time2 = micros();
   Serial.print("done in ");
   Serial.print(time2-time1);
-  Serial.println(" micros");
+  Serial.println(" micro seconds");
 }
 
 /*************************************/

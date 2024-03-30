@@ -53,14 +53,15 @@ extern "C"
 
 extern void YubikeyInit(void);
 
+extern void GeneratePayload(int);
 extern void GenerateToken(void);
 extern void GenerateStatic(void);
 
-extern void GenerateChallResp(void);
-extern void GenerateHOTP(void);
-extern void GenerateTOTP(void);
+// extern void GenerateChallResp(void);	// unused !
+// extern void GenerateHOTP(void);	// unused !
+// extern void GenerateTOTP(void);	// unused !
 
-extern void SendKbString(char * in);
+// extern void SendKbString(char * in);	// unused !
 
 #ifdef __cplusplus
 }
